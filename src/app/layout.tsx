@@ -10,7 +10,7 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Typownik MŚ 2026",
+  title: "Kuba Cup",
   description: "Typuj wyniki Mistrzostw Świata 2026",
 };
 
@@ -25,6 +25,9 @@ export default function RootLayout({
         <SessionProvider>
           <Navbar />
           <main className="flex-1">{children}</main>
+          <footer className="text-center text-xs text-gray-600 py-4">
+            Kuba Cup &middot; MŚ 2026 &middot; made by Jakub Babula
+          </footer>
         </SessionProvider>
       </body>
     </html>

@@ -9,7 +9,7 @@ export default async function HomePage() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] gap-6 text-center px-4">
       <div className="text-6xl">⚽</div>
-      <h1 className="text-4xl font-bold text-white">Typownik MŚ 2026</h1>
+      <h1 className="text-4xl font-bold text-white">Kuba Cup</h1>
       <p className="text-gray-400 max-w-md">
         Rywalizuj ze znajomymi typując wyniki meczów Mistrzostw Świata 2026.
         Zbieraj punkty i wspinaj się w rankingu!

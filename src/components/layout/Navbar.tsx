@@ -9,7 +9,7 @@ export default function Navbar() {
     <nav className="bg-gray-900 border-b border-gray-800 px-4 py-3">
       <div className="max-w-5xl mx-auto flex items-center justify-between">
         <Link href="/" className="text-xl font-bold text-white tracking-tight">
-          ⚽ Typownik MŚ 2026
+          ⚽ Kuba Cup
         </Link>
         <div className="flex items-center gap-4 text-sm">
           {session ? (
