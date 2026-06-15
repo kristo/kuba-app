@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
 export async function POST(req: NextRequest) {
-  const { name, email, password, inviteCode } = await req.json();
+  const { name, email, password, inviteCode, passwordHint } = await req.json();
 
   if (!name || !email || !password || !inviteCode) {
     return NextResponse.json({ error: "Wszystkie pola są wymagane." }, { status: 400 });
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
   const passwordHash = await bcrypt.hash(password, 12);
 
   const user = await prisma.user.create({
-    data: { name, email, passwordHash },
+    data: { name, email, passwordHash, passwordHint: passwordHint ?? null },
   });
 
   await prisma.inviteCode.update({

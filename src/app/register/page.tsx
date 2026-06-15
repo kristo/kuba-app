@@ -74,6 +74,16 @@ export default function RegisterPage() {
               className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-green-500"
             />
           </div>
+          <div>
+            <label className="text-sm text-gray-400 mb-1 block">Wskazówka do hasła (opcjonalnie)</label>
+            <input
+              name="passwordHint"
+              type="text"
+              maxLength={100}
+              placeholder="Np. ostatnie 3 znaki"
+              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-green-500"
+            />
+          </div>
           {error && <p className="text-red-400 text-sm">{error}</p>}
           <button
             type="submit"

@@ -8,6 +8,7 @@ export default function LoginPage() {
   const router = useRouter();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [hint, setHint] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -22,7 +23,24 @@ export default function LoginPage() {
     setLoading(false);
     if (res?.error) {
       setError("Nieprawidłowy e-mail lub hasło.");
+      // fetch optional password hint
+      try {
+        const hintRes = await fetch("/api/auth/password-hint", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: form.get("email") }),
+        });
+        if (hintRes.ok) {
+          const json = await hintRes.json();
+          setHint(json.hint ?? null);
+        } else {
+          setHint(null);
+        }
+      } catch (e) {
+        setHint(null);
+      }
     } else {
+      setHint(null);
       router.push("/matches");
       router.refresh();
     }
@@ -52,6 +70,9 @@ export default function LoginPage() {
             />
           </div>
           {error && <p className="text-red-400 text-sm">{error}</p>}
+          {hint && (
+            <p className="text-yellow-300 text-sm">Wskazówka: {hint}</p>
+          )}
           <button
             type="submit"
             disabled={loading}

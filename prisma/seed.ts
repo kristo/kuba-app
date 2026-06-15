@@ -258,6 +258,7 @@ async function main() {
       name: "Admin",
       email: "admin@typownik.pl",
       passwordHash: adminPassword,
+      passwordHint: "ostatnie 3 znaki: 123",
       isAdmin: true,
     },
   });
@@ -272,6 +273,7 @@ async function main() {
       name: "Tester",
       email: "test@typownik.pl",
       passwordHash: testPassword,
+      passwordHint: "ostatnie 3 znaki: 123",
       isAdmin: false,
     },
   });

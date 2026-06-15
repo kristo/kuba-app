@@ -14,8 +14,14 @@ export default function Navbar() {
         <div className="flex items-center gap-4 text-sm">
           {session ? (
             <>
+              <Link href="/worldcup" className="text-gray-300 hover:text-white transition-colors">
+                🪜 MŚ 2026
+              </Link>
               <Link href="/matches" className="text-gray-300 hover:text-white transition-colors">
                 Mecze
+              </Link>
+              <Link href="/bracket" className="text-gray-300 hover:text-white transition-colors">
+                Drabinka
               </Link>
               <Link href="/groups" className="text-gray-300 hover:text-white transition-colors">
                 Grupy
