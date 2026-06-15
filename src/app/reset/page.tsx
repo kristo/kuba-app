@@ -1,11 +1,16 @@
 "use client";
-import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+export const dynamic = 'force-dynamic';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function ResetPage() {
   const router = useRouter();
-  const params = useSearchParams();
-  const token = params.get("token");
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setToken(params.get("token"));
+  }, []);
 
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
