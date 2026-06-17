@@ -84,6 +84,9 @@ interface GroupMatchDef {
   matchNumber: number;
 }
 
+const kickoffForDb = (kickoffUtc: Date) =>
+  new Date(kickoffUtc.getTime() + 2 * 60 * 60 * 1000);
+
 const groupDefs: GroupMatchDef[] = [
   // ── Matchday 1 ─────────────────────────────────────────────────────
   // Group A
@@ -201,49 +204,49 @@ const groupDefs: GroupMatchDef[] = [
 ];
 
 // ─── Knockout matches (TBD teams) ─────────────────────────────────────────────
+// Godziny UTC odpowiadają godzinom transmisji TVP (czas polski, CEST).
 const knockoutMatches = [
   // Round of 32 (16 matches)
-  ...Array.from({ length: 16 }, (_, i) => ({
-    groupLabel: null,
-    stage: "ROUND_OF_32" as MatchStage,
-    kickoff: new Date(`2026-07-01T18:00:00Z`),
-    matchNumber: 73 + i,
-  })),
+  { matchNumber: 73, stage: "ROUND_OF_32" as MatchStage, kickoff: new Date("2026-06-28T19:00:00Z"), groupLabel: null },
+  { matchNumber: 74, stage: "ROUND_OF_32" as MatchStage, kickoff: new Date("2026-06-29T17:00:00Z"), groupLabel: null },
+  { matchNumber: 75, stage: "ROUND_OF_32" as MatchStage, kickoff: new Date("2026-06-29T20:30:00Z"), groupLabel: null },
+  { matchNumber: 76, stage: "ROUND_OF_32" as MatchStage, kickoff: new Date("2026-06-30T01:00:00Z"), groupLabel: null },
+  { matchNumber: 77, stage: "ROUND_OF_32" as MatchStage, kickoff: new Date("2026-06-30T17:00:00Z"), groupLabel: null },
+  { matchNumber: 78, stage: "ROUND_OF_32" as MatchStage, kickoff: new Date("2026-06-30T21:00:00Z"), groupLabel: null },
+  { matchNumber: 79, stage: "ROUND_OF_32" as MatchStage, kickoff: new Date("2026-07-01T01:00:00Z"), groupLabel: null },
+  { matchNumber: 80, stage: "ROUND_OF_32" as MatchStage, kickoff: new Date("2026-07-01T16:00:00Z"), groupLabel: null },
+  { matchNumber: 81, stage: "ROUND_OF_32" as MatchStage, kickoff: new Date("2026-07-01T20:00:00Z"), groupLabel: null },
+  { matchNumber: 82, stage: "ROUND_OF_32" as MatchStage, kickoff: new Date("2026-07-02T00:00:00Z"), groupLabel: null },
+  { matchNumber: 83, stage: "ROUND_OF_32" as MatchStage, kickoff: new Date("2026-07-02T19:00:00Z"), groupLabel: null },
+  { matchNumber: 84, stage: "ROUND_OF_32" as MatchStage, kickoff: new Date("2026-07-02T23:00:00Z"), groupLabel: null },
+  { matchNumber: 85, stage: "ROUND_OF_32" as MatchStage, kickoff: new Date("2026-07-03T03:00:00Z"), groupLabel: null },
+  { matchNumber: 86, stage: "ROUND_OF_32" as MatchStage, kickoff: new Date("2026-07-03T18:00:00Z"), groupLabel: null },
+  { matchNumber: 87, stage: "ROUND_OF_32" as MatchStage, kickoff: new Date("2026-07-03T22:00:00Z"), groupLabel: null },
+  { matchNumber: 88, stage: "ROUND_OF_32" as MatchStage, kickoff: new Date("2026-07-04T01:30:00Z"), groupLabel: null },
+
   // Round of 16 (8 matches)
-  ...Array.from({ length: 8 }, (_, i) => ({
-    groupLabel: null,
-    stage: "ROUND_OF_16" as MatchStage,
-    kickoff: new Date(`2026-07-05T18:00:00Z`),
-    matchNumber: 89 + i,
-  })),
+  { matchNumber: 89, stage: "ROUND_OF_16" as MatchStage, kickoff: new Date("2026-07-04T17:00:00Z"), groupLabel: null },
+  { matchNumber: 90, stage: "ROUND_OF_16" as MatchStage, kickoff: new Date("2026-07-04T21:00:00Z"), groupLabel: null },
+  { matchNumber: 91, stage: "ROUND_OF_16" as MatchStage, kickoff: new Date("2026-07-05T20:00:00Z"), groupLabel: null },
+  { matchNumber: 92, stage: "ROUND_OF_16" as MatchStage, kickoff: new Date("2026-07-06T00:00:00Z"), groupLabel: null },
+  { matchNumber: 93, stage: "ROUND_OF_16" as MatchStage, kickoff: new Date("2026-07-06T19:00:00Z"), groupLabel: null },
+  { matchNumber: 94, stage: "ROUND_OF_16" as MatchStage, kickoff: new Date("2026-07-07T00:00:00Z"), groupLabel: null },
+  { matchNumber: 95, stage: "ROUND_OF_16" as MatchStage, kickoff: new Date("2026-07-07T16:00:00Z"), groupLabel: null },
+  { matchNumber: 96, stage: "ROUND_OF_16" as MatchStage, kickoff: new Date("2026-07-07T20:00:00Z"), groupLabel: null },
+
   // Quarter-finals (4 matches)
-  ...Array.from({ length: 4 }, (_, i) => ({
-    groupLabel: null,
-    stage: "QUARTER_FINAL" as MatchStage,
-    kickoff: new Date(`2026-07-09T18:00:00Z`),
-    matchNumber: 97 + i,
-  })),
+  { matchNumber: 97, stage: "QUARTER_FINAL" as MatchStage, kickoff: new Date("2026-07-09T20:00:00Z"), groupLabel: null },
+  { matchNumber: 98, stage: "QUARTER_FINAL" as MatchStage, kickoff: new Date("2026-07-10T19:00:00Z"), groupLabel: null },
+  { matchNumber: 99, stage: "QUARTER_FINAL" as MatchStage, kickoff: new Date("2026-07-11T21:00:00Z"), groupLabel: null },
+  { matchNumber: 100, stage: "QUARTER_FINAL" as MatchStage, kickoff: new Date("2026-07-12T01:00:00Z"), groupLabel: null },
+
   // Semi-finals (2 matches)
-  ...Array.from({ length: 2 }, (_, i) => ({
-    groupLabel: null,
-    stage: "SEMI_FINAL" as MatchStage,
-    kickoff: new Date(`2026-07-13T18:00:00Z`),
-    matchNumber: 101 + i,
-  })),
-  // 3rd place
-  {
-    groupLabel: null,
-    stage: "THIRD_PLACE" as MatchStage,
-    kickoff: new Date("2026-07-15T14:00:00Z"),
-    matchNumber: 103,
-  },
-  // Final
-  {
-    groupLabel: null,
-    stage: "FINAL" as MatchStage,
-    kickoff: new Date("2026-07-19T18:00:00Z"),
-    matchNumber: 104,
-  },
+  { matchNumber: 101, stage: "SEMI_FINAL" as MatchStage, kickoff: new Date("2026-07-14T19:00:00Z"), groupLabel: null },
+  { matchNumber: 102, stage: "SEMI_FINAL" as MatchStage, kickoff: new Date("2026-07-15T19:00:00Z"), groupLabel: null },
+
+  // 3rd place and final
+  { matchNumber: 103, stage: "THIRD_PLACE" as MatchStage, kickoff: new Date("2026-07-18T21:00:00Z"), groupLabel: null },
+  { matchNumber: 104, stage: "FINAL" as MatchStage, kickoff: new Date("2026-07-19T19:00:00Z"), groupLabel: null },
 ];
 
 async function main() {
@@ -306,11 +309,13 @@ async function main() {
   for (const m of groupDefs) {
     await prisma.match.upsert({
       where: { matchNumber: m.matchNumber },
-      update: {},
+      update: {
+        kickoff: kickoffForDb(m.kickoff),
+      },
       create: {
         homeTeamId: teamMap.get(m.home)!,
         awayTeamId: teamMap.get(m.away)!,
-        kickoff: m.kickoff,
+        kickoff: kickoffForDb(m.kickoff),
         stage: "GROUP",
         groupLabel: m.groupLabel,
         matchNumber: m.matchNumber,
@@ -323,9 +328,11 @@ async function main() {
   for (const m of knockoutMatches) {
     await prisma.match.upsert({
       where: { matchNumber: m.matchNumber },
-      update: {},
+      update: {
+        kickoff: kickoffForDb(m.kickoff),
+      },
       create: {
-        kickoff: m.kickoff,
+        kickoff: kickoffForDb(m.kickoff),
         stage: m.stage,
         groupLabel: m.groupLabel,
         matchNumber: m.matchNumber,
