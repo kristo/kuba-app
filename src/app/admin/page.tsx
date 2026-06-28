@@ -154,12 +154,12 @@ export default function AdminPage() {
 
     setRound32Loading(false);
     if (!res.ok) {
-      setRound32Msg(data.error ?? "Błąd uzupełniania par 1/32.");
+      setRound32Msg(data.error ?? "Błąd uzupełniania par i godzin 1/32.");
       return;
     }
 
     fetch("/api/admin/matches").then((r) => r.json()).then(setMatches);
-    setRound32Msg("Pary 1/32 zostały uzupełnione.");
+    setRound32Msg("Pary i godziny 1/32 zostały uzupełnione.");
   }
 
   const upcomingMatches = matches.filter((m) => m.status !== "FINISHED");
@@ -175,7 +175,7 @@ export default function AdminPage() {
           disabled={round32Loading}
           className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 disabled:cursor-not-allowed rounded-lg py-2.5 font-medium transition-colors"
         >
-          {round32Loading ? "Uzupełniam pary 1/32..." : "Uzupełnij pary 1/32"}
+          {round32Loading ? "Uzupełniam pary i godziny 1/32..." : "Uzupełnij pary i godziny 1/32"}
         </button>
         {round32Msg && <p className={`text-sm mt-3 ${round32Msg.includes("Błąd") ? "text-red-400" : "text-green-400"}`}>{round32Msg}</p>}
       </section>

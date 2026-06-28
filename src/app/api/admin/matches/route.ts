@@ -2,24 +2,27 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-const ROUND_OF_32_PAIRS: Array<{ matchNumber: number; home: string; away: string }> = [
-  { matchNumber: 73, home: "RSA", away: "CAN" },
-  { matchNumber: 74, home: "BRA", away: "JPN" },
-  { matchNumber: 75, home: "GER", away: "PAR" },
-  { matchNumber: 76, home: "NED", away: "MAR" },
-  { matchNumber: 77, home: "CIV", away: "NOR" },
-  { matchNumber: 78, home: "FRA", away: "SWE" },
-  { matchNumber: 79, home: "MEX", away: "ECU" },
-  { matchNumber: 80, home: "ENG", away: "COD" },
-  { matchNumber: 81, home: "BEL", away: "SEN" },
-  { matchNumber: 82, home: "USA", away: "BIH" },
-  { matchNumber: 83, home: "ESP", away: "AUT" },
-  { matchNumber: 84, home: "POR", away: "CRO" },
-  { matchNumber: 85, home: "SUI", away: "ALG" },
-  { matchNumber: 86, home: "AUS", away: "EGY" },
-  { matchNumber: 87, home: "ARG", away: "CPV" },
-  { matchNumber: 88, home: "COL", away: "GHA" },
+const ROUND_OF_32_PAIRS: Array<{ matchNumber: number; home: string; away: string; kickoffUtc: string }> = [
+  { matchNumber: 73, home: "RSA", away: "CAN", kickoffUtc: "2026-06-28T19:00:00Z" },
+  { matchNumber: 74, home: "BRA", away: "JPN", kickoffUtc: "2026-06-29T17:00:00Z" },
+  { matchNumber: 75, home: "GER", away: "PAR", kickoffUtc: "2026-06-29T20:30:00Z" },
+  { matchNumber: 76, home: "NED", away: "MAR", kickoffUtc: "2026-06-30T01:00:00Z" },
+  { matchNumber: 77, home: "CIV", away: "NOR", kickoffUtc: "2026-06-30T17:00:00Z" },
+  { matchNumber: 78, home: "FRA", away: "SWE", kickoffUtc: "2026-06-30T21:00:00Z" },
+  { matchNumber: 79, home: "MEX", away: "ECU", kickoffUtc: "2026-07-01T01:00:00Z" },
+  { matchNumber: 80, home: "ENG", away: "COD", kickoffUtc: "2026-07-01T16:00:00Z" },
+  { matchNumber: 81, home: "BEL", away: "SEN", kickoffUtc: "2026-07-01T20:00:00Z" },
+  { matchNumber: 82, home: "USA", away: "BIH", kickoffUtc: "2026-07-02T00:00:00Z" },
+  { matchNumber: 83, home: "ESP", away: "AUT", kickoffUtc: "2026-07-02T19:00:00Z" },
+  { matchNumber: 84, home: "POR", away: "CRO", kickoffUtc: "2026-07-02T23:00:00Z" },
+  { matchNumber: 85, home: "SUI", away: "ALG", kickoffUtc: "2026-07-03T03:00:00Z" },
+  { matchNumber: 86, home: "AUS", away: "EGY", kickoffUtc: "2026-07-03T18:00:00Z" },
+  { matchNumber: 87, home: "ARG", away: "CPV", kickoffUtc: "2026-07-03T22:00:00Z" },
+  { matchNumber: 88, home: "COL", away: "GHA", kickoffUtc: "2026-07-04T01:30:00Z" },
 ];
+
+const kickoffForDb = (kickoffUtc: Date) =>
+  new Date(kickoffUtc.getTime() + 2 * 60 * 60 * 1000);
 
 export async function GET(req: NextRequest) {
   const session = await auth();
@@ -57,7 +60,11 @@ export async function POST() {
 
       return prisma.match.update({
         where: { matchNumber: pair.matchNumber },
-        data: { homeTeamId, awayTeamId },
+        data: {
+          homeTeamId,
+          awayTeamId,
+          kickoff: kickoffForDb(new Date(pair.kickoffUtc)),
+        },
       });
     })
   );
