@@ -41,6 +41,8 @@ export default function AdminPage() {
   const [resultMsg, setResultMsg] = useState("");
   const [setupMsg, setSetupMsg] = useState("");
   const [codeMsg, setCodeMsg] = useState("");
+  const [round32Msg, setRound32Msg] = useState("");
+  const [round32Loading, setRound32Loading] = useState(false);
 
   useEffect(() => {
     fetch("/api/admin/matches").then((r) => r.json()).then(setMatches);
@@ -141,11 +143,42 @@ export default function AdminPage() {
     setSetupMsg("Mecz zaktualizowany.");
   }
 
+  async function applyRoundOf32Pairs() {
+    setRound32Msg("");
+    setRound32Loading(true);
+
+    const res = await fetch("/api/admin/matches", {
+      method: "POST",
+    });
+    const data = await res.json();
+
+    setRound32Loading(false);
+    if (!res.ok) {
+      setRound32Msg(data.error ?? "Błąd uzupełniania par 1/32.");
+      return;
+    }
+
+    fetch("/api/admin/matches").then((r) => r.json()).then(setMatches);
+    setRound32Msg("Pary 1/32 zostały uzupełnione.");
+  }
+
   const upcomingMatches = matches.filter((m) => m.status !== "FINISHED");
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-white mb-8">Panel Administratora</h1>
+
+      <section className="bg-gray-900 rounded-2xl p-6 mb-6">
+        <h2 className="text-xl font-semibold text-white mb-4">Szybkie akcje</h2>
+        <button
+          onClick={applyRoundOf32Pairs}
+          disabled={round32Loading}
+          className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 disabled:cursor-not-allowed rounded-lg py-2.5 font-medium transition-colors"
+        >
+          {round32Loading ? "Uzupełniam pary 1/32..." : "Uzupełnij pary 1/32"}
+        </button>
+        {round32Msg && <p className={`text-sm mt-3 ${round32Msg.includes("Błąd") ? "text-red-400" : "text-green-400"}`}>{round32Msg}</p>}
+      </section>
 
       {/* Enter Result */}
       <section className="bg-gray-900 rounded-2xl p-6 mb-6">
