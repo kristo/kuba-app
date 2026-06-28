@@ -6,10 +6,18 @@ interface Match {
   matchNumber: number;
   homeTeam: { name: string; flagEmoji: string | null } | null;
   awayTeam: { name: string; flagEmoji: string | null } | null;
+  homeTeamId: string | null;
+  awayTeamId: string | null;
   homeScore: number | null;
   awayScore: number | null;
   status: string;
   kickoff: string;
+}
+
+interface Team {
+  id: string;
+  name: string;
+  code: string;
 }
 
 interface InviteCode {
@@ -21,17 +29,39 @@ interface InviteCode {
 
 export default function AdminPage() {
   const [matches, setMatches] = useState<Match[]>([]);
+  const [teams, setTeams] = useState<Team[]>([]);
   const [codes, setCodes] = useState<InviteCode[]>([]);
   const [selectedMatch, setSelectedMatch] = useState<string>("");
+  const [selectedSetupMatch, setSelectedSetupMatch] = useState<string>("");
+  const [setupHomeTeamId, setSetupHomeTeamId] = useState<string>("");
+  const [setupAwayTeamId, setSetupAwayTeamId] = useState<string>("");
+  const [setupKickoff, setSetupKickoff] = useState<string>("");
   const [homeScore, setHomeScore] = useState(0);
   const [awayScore, setAwayScore] = useState(0);
   const [resultMsg, setResultMsg] = useState("");
+  const [setupMsg, setSetupMsg] = useState("");
   const [codeMsg, setCodeMsg] = useState("");
 
   useEffect(() => {
     fetch("/api/admin/matches").then((r) => r.json()).then(setMatches);
+    fetch("/api/admin/teams").then((r) => r.json()).then(setTeams);
     fetch("/api/invite").then((r) => r.json()).then(setCodes);
   }, []);
+
+  useEffect(() => {
+    if (!selectedSetupMatch) return;
+    const match = matches.find((m) => m.id === selectedSetupMatch);
+    if (!match) return;
+
+    setSetupHomeTeamId(match.homeTeamId ?? "");
+    setSetupAwayTeamId(match.awayTeamId ?? "");
+
+    const dt = new Date(match.kickoff);
+    const local = new Date(dt.getTime() - dt.getTimezoneOffset() * 60000)
+      .toISOString()
+      .slice(0, 16);
+    setSetupKickoff(local);
+  }, [selectedSetupMatch, matches]);
 
   async function submitResult(e: React.FormEvent) {
     e.preventDefault();
@@ -69,6 +99,46 @@ export default function AdminPage() {
       setCodeMsg(`Wygenerowano: ${data.codes.join(", ")}`);
       fetch("/api/invite").then((r) => r.json()).then(setCodes);
     }
+  }
+
+  async function submitMatchSetup(e: React.FormEvent) {
+    e.preventDefault();
+    setSetupMsg("");
+
+    const hasHome = setupHomeTeamId.trim().length > 0;
+    const hasAway = setupAwayTeamId.trim().length > 0;
+
+    if (hasHome !== hasAway) {
+      setSetupMsg("Podaj obie drużyny albo wyczyść obie.");
+      return;
+    }
+
+    if (hasHome && setupHomeTeamId === setupAwayTeamId) {
+      setSetupMsg("Drużyny muszą być różne.");
+      return;
+    }
+
+    const res = await fetch("/api/admin/matches", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        matchId: selectedSetupMatch,
+        homeTeamId: hasHome ? setupHomeTeamId : null,
+        awayTeamId: hasAway ? setupAwayTeamId : null,
+        kickoff: setupKickoff,
+      }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      setSetupMsg(data.error ?? "Błąd zapisu.");
+      return;
+    }
+
+    setMatches((prev) =>
+      prev.map((m) => (m.id === data.id ? { ...m, ...data } : m))
+    );
+    setSetupMsg("Mecz zaktualizowany.");
   }
 
   const upcomingMatches = matches.filter((m) => m.status !== "FINISHED");
@@ -119,6 +189,69 @@ export default function AdminPage() {
             className="w-full bg-green-600 hover:bg-green-500 rounded-lg py-2.5 font-medium transition-colors"
           >
             Zapisz wynik
+          </button>
+        </form>
+      </section>
+
+      {/* Setup Match */}
+      <section className="bg-gray-900 rounded-2xl p-6 mb-6">
+        <h2 className="text-xl font-semibold text-white mb-4">Ustaw drużyny i godzinę meczu</h2>
+        <form onSubmit={submitMatchSetup} className="flex flex-col gap-4">
+          <select
+            value={selectedSetupMatch}
+            onChange={(e) => setSelectedSetupMatch(e.target.value)}
+            required
+            className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-amber-500"
+          >
+            <option value="">-- Wybierz mecz --</option>
+            {matches.map((m) => (
+              <option key={m.id} value={m.id}>
+                #{m.matchNumber} {m.homeTeam?.name ?? "TBD"} vs {m.awayTeam?.name ?? "TBD"}
+              </option>
+            ))}
+          </select>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <select
+              value={setupHomeTeamId}
+              onChange={(e) => setSetupHomeTeamId(e.target.value)}
+              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-amber-500"
+            >
+              <option value="">-- Gospodarz (TBD) --</option>
+              {teams.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.name} ({t.code})
+                </option>
+              ))}
+            </select>
+            <select
+              value={setupAwayTeamId}
+              onChange={(e) => setSetupAwayTeamId(e.target.value)}
+              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-amber-500"
+            >
+              <option value="">-- Gość (TBD) --</option>
+              {teams.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.name} ({t.code})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <input
+            type="datetime-local"
+            value={setupKickoff}
+            onChange={(e) => setSetupKickoff(e.target.value)}
+            required
+            className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-amber-500"
+          />
+
+          {setupMsg && <p className={`text-sm ${setupMsg.includes("Błąd") ? "text-red-400" : "text-green-400"}`}>{setupMsg}</p>}
+          <button
+            type="submit"
+            className="w-full bg-amber-600 hover:bg-amber-500 rounded-lg py-2.5 font-medium transition-colors"
+          >
+            Zapisz ustawienia meczu
           </button>
         </form>
       </section>
